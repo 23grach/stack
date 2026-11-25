@@ -5,7 +5,7 @@ description: Scores a repository for agent-readiness and AI readiness, and propo
 
 # Codebase review
 
-Review mode is the default. Score the rubric and report. Do not modify the target, apply fixes, write instruction files, or run the suite. Scoring those files and the done command is in scope. Fix mode is opt-in and runs only on rows the user names.
+Review mode is the default. Score the rubric and fill Metric now from read-only measures in `references/measure.md`. Do not modify the target, apply fixes, write instruction files, or run the done command. Fix mode is opt-in and runs that command only on named rows.
 
 ## Input
 
@@ -29,18 +29,18 @@ A readable path. Optional focus: a directory, module, or area. None means the wh
 
 ## Rubric
 
-1. **Nearest sample.** Agents copy the nearest, most frequent example, so keep one current sample next to the work. Weak: a stale or competing copy sits beside it. A vendored or locked copy counts only where it disagrees with the instruction file.
+1. **Nearest sample.** Agents copy the nearest, most frequent example, so keep one current sample next to the work. Weak: a stale or competing copy sits beside it. A vendored or locked copy counts only where it disagrees with the repo's rules.
 2. **Exact names and error strings.** Functions, variables, and errors need unique names, not `utils`, `helpers`, or `Card2`. Console output, and UI copy if any, needs a stable phrase. Weak: a generic name, or an error with no stable phrase.
 3. **Names are the map.** Folder, file, and symbol names should show where a feature lives. Use the same words in the feature name, files, functions, and UI copy, if any. Weak: the names do not match the words used to ask for it.
-4. **Lean searchable tree.** A hit enters context even if the file stays closed. Keep generated files, build output, logs, large data, old exports, and second experiments out. A committed file is still searched. Generated text (for example JSON) counts. Byte-for-byte baselines are N/A. Weak: that noise is committed. A binary counts only when a small text or vector master in the target can rebuild it.
-5. **File size.** Count source, tests, and styles, if any. Skip docs, generated or data files, lockfiles, fixtures, and snapshots. Rule of thumb: Weak over 400 lines, Good under 250, 250–400 between.
+4. **Lean searchable tree.** A hit enters context even if the file stays closed. Keep generated files, build output, logs, large data, old exports, and second experiments out. A committed file is still searched. Count committed generated files by count and bytes, including raster derivatives and visual-test baselines. Weak: that noise is committed.
+5. **File size.** Count source, tests, and styles, if any. Skip docs, generated or data files, lockfiles, fixtures, and snapshots. Good under 250, Mixed at 250–400 or for a minority over 400, Weak only when widespread.
 6. **Referenced shared modules.** Import a shared module at each use and export a clear signature. Weak: the same helper is written again in two or more places.
 7. **Readable repo state.** The working tree holds the current task. Commits are small and say what changed. One default branch needs no written naming rule. N/A with no git history. Weak: unrelated edits share the tree, or messages do not say what changed.
 8. **One schema.** One type or model plus its validator in one module counts (a TypeScript type and parser, a Pydantic model, a Go struct and validation). A doc or table of the same fields does not. Pasted values are practice 9. Weak: those fields are declared again in another type, struct, or validator.
-9. **Instruction file.** Short, at the root, plus one per project; the closest wins (https://agents.md/). Say only what the code cannot. Point from a file the agent always loads, instead of pasting a guide, sample, or values. Every path, script, and command it names must exist. Versioned docs for a fast-moving dependency are optional. No file: Weak only with unusual commands, required env vars, or hard rules; otherwise Mixed, and file-only parts are N/A. Weak: missing where those facts exist, or it pastes, or a named path or command is missing. A skill repeating its own commands is not Weak.
-10. **One done command.** Document the done command (a test, a type check, or lint) and a fast check for one file or package. Good when `AGENTS.md`, or `README` if none, and the required CI check name it. Subset jobs do not change the score. Do not add or run it. Weak: no done command is documented.
+9. **Instruction file.** Short, at the root, plus one per project; the closest wins (https://agents.md/). Say only what the code cannot. Point from a file the agent always loads, instead of pasting a guide, sample, or values. Every path, script, and command it names must exist. Setup paths (`node_modules/`) and tool-owned blocks (a framework rewrites them) do not count as broken references or pasting. Versioned docs for a fast-moving dependency are optional. No file: Weak only with unusual commands, required env vars, or hard rules; otherwise Mixed, and file-only parts are N/A. Weak: missing where those facts exist, or it pastes, or a named path or command is missing. A skill repeating its own commands is not Weak.
+10. **One done command.** Document the done command (a test, a type check, or lint) and a fast check for one file or package. Good when `AGENTS.md`, or `README` if none, documents it and CI runs the same steps, even under a different script name. Subset jobs do not change the score. Do not add or run it. Weak: no done command is documented.
 11. **Fresh offline sandbox.** Read only. Do not run tests. Good: a committed lockfile, a pinned toolchain or runtime file, and one documented setup command. Weak: no lockfile, setup is unwritten, or tests or setup call live URLs or need secrets missing from an env example.
-12. **Hard rules are checked.** Each "never" or "must" in the instruction file has a lint, test, hook, or CI step that prints the rule and the fix. N/A with no instruction file. Weak: the rule is only prose, or the check prints only an exit code.
+12. **Hard rules are checked.** Each "never" or "must" in the instruction file has a lint, test, hook, or CI step that prints the rule and the fix. N/A with no instruction file. Mixed when the checked rules print a fix and the leftover "must" cannot be linted. Weak: the rule is only prose, or the check prints only an exit code.
 13. **Secrets.** Keep secrets and never-read paths out of search, under a name the agent recognizes (for example `.env`). Weak: a secret is committed, or the ignored path is not recognizable.
 
 ## Fix mode
