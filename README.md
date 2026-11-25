@@ -14,7 +14,15 @@ A skill is a folder with one `SKILL.md`. The file is plain markdown, with a shor
 
 ## Install
 
-Copy the skill folder into the skills directory your agent already reads. For example:
+With the Vercel skills CLI (Node 22.20+):
+
+```
+npx skills add 23grach/stack --skill codebase-review
+```
+
+Add `-g` for all projects, or `-a claude-code` (and the same flag for other agents) to pick the agent.
+
+Or copy the skill folder into the skills directory your agent already reads. For example:
 
 - `~/.claude/skills/codebase-review`
 - `.cursor/skills/codebase-review`
@@ -38,7 +46,7 @@ skills/codebase-review/references/measure.md
 skills/codebase-review/references/report-template.md
 ```
 
-`SKILL.md` is the procedure. `references/measure.md` is the metric list, read only in fix mode. `references/report-template.md` is the report shape, including a labeled example.
+`SKILL.md` is the procedure. `references/measure.md` is the metric list: review fills Metric now from its read-only measures, and the done command runs only in fix mode. `references/report-template.md` is the report shape, including a labeled example.
 
 ## License
 
