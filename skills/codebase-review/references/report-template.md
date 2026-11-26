@@ -1,41 +1,40 @@
 # Report template
 
-Commands here are examples, not a required stack. Columns: Sev, Practice, Finding, Fix, Effort, Metric now. Effort: S is one file, M is one module, L crosses the repo. In review, Metric now is a read-only measure. The done command runs only in fix mode.
+Commands here are examples, not a required stack. The reply is only this report, starting with the verdict line. Columns: Sev, What's wrong, How to fix it. List only problems. Sort by severity: Critical, High, Medium, Low. Write each problem and fix in short sentences a non-specialist can follow. File names and commands stay in code spans. When one fix also solves another problem, put both in that row.
 
 ## EXAMPLE DATA
 
 Fictional `acme-notes`. Do not copy it.
 
-> **Verdict:** Work is possible here, but not verifiable offline. Fix the done command and the instruction file first. 2 Critical, 2 High, 3 Medium, 1 Low.
+> **Verdict:** A new copy of the project cannot be installed. Fix that first. 1 Critical, 2 High, 1 Medium, 1 Low.
 
-| Sev | Practice | Finding | Fix | Effort | Metric now |
-|---|---|---|---|---|---|
-| Critical | 9 Instruction file | `AGENTS.md:12` `npm run verify` is missing | Point at the real test | S | 3 broken refs |
-| Critical | 11 Fresh offline sandbox | A test calls `api.acme.dev` | Fake the client | M | offline: fail |
-| High | 5 File size | Editor file is 812 lines | Split it | M | 4 over 400 |
-| High | 8 One schema | `Note` defined twice | Keep one | S | 3 duplicates |
-| Medium | 4 Lean searchable tree | `dist/` committed | Untrack and ignore | S | 14 files, 2.1MB |
-| Medium | 12 Hard rules are checked | Never-import has no check | Add a boundary check | S | 2 unchecked |
-| Medium | 10 One done command | No scoped check | Document one file | S | scoped missing |
-| Low | 2 Exact names and error strings | `utils2.ts` | Rename it | S | 1 generic |
+| Sev | What's wrong | How to fix it |
+|---|---|---|
+| Critical | A new copy of the project cannot be installed. There is no `package-lock.json`, and no file says which command installs dependencies. | Add `package-lock.json` and write the install command in `AGENTS.md`. |
+| High | `package.json` has `npm test`, but no file says to run it after a change. | Write `npm test` in `AGENTS.md`. |
+| High | The fields of a note are written out in both `src/note.ts` and `src/api.ts`. | Keep the fields in `src/note.ts` and use them from `src/api.ts`. |
+| Medium | The sentence for an empty list is copied in `src/home.ts`, `src/search.ts`, and `src/archive.ts`. The copy in `src/archive.ts` is out of date. | Keep the copy in `src/home.ts` and use it from the other two files. |
+| Low | `src/editor.ts` is 812 lines. The other source files are short. | Split `src/editor.ts` into smaller files with clear names. |
 
-#### 9. Instruction file: Critical
+#### A new copy cannot be installed
 
-- **Evidence:** missing script, two missing paths.
-- **Change:** point at the real test. Delete the dead lines.
-- **Measure:** broken refs 3, target 0.
+- **Evidence:** no `package-lock.json`. `README.md` and `AGENTS.md` do not name an install command.
+- **Change:** Add `package-lock.json` and write the install command in `AGENTS.md`.
 
-Same block for 11, 5, and 8.
+#### The test command is not written down
 
-### Fix mode: before/after
+- **Evidence:** `package.json:8` defines `npm test`. `AGENTS.md` and `README.md` never name it.
+- **Change:** Write `npm test` in `AGENTS.md`.
 
-| Row | Metric | Before | After | Delta | Done cmd |
-|---|---|---|---|---|---|
-| 9 | Broken refs | 3 | 0 | −3 | pass |
-| 11 | Offline pass | fail | pass | yes | pass |
-| — | Generated files | 14 files, 2.1MB | 14 files, 2.1MB | 0 | — |
-| — | Always-loaded tokens | 1140 | 980 | −160 | — |
+#### Note fields are written twice
 
-`HEAD before: a1b2c3d · branch: review-fixes · after: e4f5g6h · outcome eval: not run`
+- **Evidence:** `src/note.ts:4` and `src/api.ts:18`.
+- **Change:** Keep the fields in `src/note.ts` and use them from `src/api.ts`.
 
-Placeholder SHAs. A dash is a default-set metric.
+### Fix mode
+
+Add this only after the named rows are changed. Say what changed. If the done command fails, say that the row was reverted.
+
+`HEAD before: a1b2c3d · branch: review-fixes · after: e4f5g6h · done command: pass`
+
+Placeholder SHAs.

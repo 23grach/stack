@@ -5,7 +5,9 @@ description: Scores a repository for agent-readiness and AI readiness, and propo
 
 # Codebase review
 
-Review mode is the default. Score the rubric and fill Metric now from read-only measures in `references/measure.md`. Do not modify the target, apply fixes, write instruction files, or run the done command. Fix mode is opt-in and runs that command only on named rows.
+Review mode is the default. Score the checklist and report problems only. Do not modify the target, apply fixes, write instruction files, or run the done command. Fix mode is opt-in and runs that command only on named rows.
+
+The reply is only the report. Start with the verdict line. Do not print progress or status lines, such as "Mapping done; checking the tree." or "Still read-only; writing the table."
 
 ## Input
 
@@ -16,16 +18,22 @@ A readable path. Optional focus: a directory, module, or area. None means the wh
 1. Stay read-only. Do not create, edit, format, delete, or commit in the target.
 2. If the path is a git checkout, record `git status --porcelain` and `git rev-parse HEAD`. Otherwise note that.
 3. Map the focus: layout, languages, modules, entry points, instruction files, schemas, scripts, and git history.
-4. Score all 13 practices. Cite paths, names, and counts.
-5. Write the report in the format below. Use `references/report-template.md` for the shape.
+4. Score all 13 practices. Cite paths, names, and counts. The practices are your checklist. Do not name or number them in the report.
+5. Write the report in the shape of `references/report-template.md`.
 6. In review mode, repeat step 2. Stop if it changed. With no git checkout, confirm you wrote nothing.
+
+## Language
+
+Write every problem and fix in plain, simple language a non-specialist can follow. Short sentences. No jargon or unexplained terms. Say "the same small function is copied into 3 files", not "duplicated helper". Say "nothing checks this rule automatically", not "unchecked invariant". File names and commands stay in code spans.
 
 ## Scores
 
-- **Good** — holds across the focus.
+Used only to pick a severity. They are not rows.
+
+- **Good** — holds across the focus. No row.
 - **Mixed** — partly holds; say what's missing.
 - **Weak** — missing or mostly fails where it applies.
-- **N/A** — does not apply.
+- **N/A** — does not apply. No row.
 
 ## Rubric
 
@@ -43,20 +51,26 @@ A readable path. Optional focus: a directory, module, or area. None means the wh
 12. **Hard rules are checked.** Each "never" or "must" in the instruction file has a lint, test, hook, or CI step that prints the rule and the fix. N/A with no instruction file. Mixed when the checked rules print a fix and the leftover "must" cannot be linted. Weak: the rule is only prose, or the check prints only an exit code.
 13. **Secrets.** Keep secrets and never-read paths out of search, under a name the agent recognizes (for example `.env`). Weak: a secret is committed, or the ignored path is not recognizable.
 
-## Fix mode
+## Severity
 
-The user must name rows, such as "fix 1 and 3". Load `references/measure.md`. Do not push, open a pull request, or merge unless asked.
+Critical only when an agent has no way to verify its work, or cannot set the project up at all. A done command that exists (for example in `package.json`) but is not documented is High, not Critical. A missing command named in the instruction file is also High when some other command can still check the work.
 
-1. Review. Write the report first.
-2. Pick. Change only the named rows.
-3. Baseline. On a clean HEAD, record the default metrics, each row's metric, and HEAD.
-4. Branch. New branch or worktree. Leave the default branch untouched.
-5. Change. One commit per row: the smallest change that moves that metric.
-6. Re-measure. Same commands, same machine, then the done command. If it fails, revert that row and say so.
-7. Report. Before/after table. Every improved claim cites a number.
+High: any other Weak. Medium: Mixed across several files. Low: Mixed in one place, or one file that contradicts an otherwise Good score. Sort by severity only: Critical, High, Medium, Low.
 
 ## Report
 
-Critical: Weak on 10, 11, or 13, or a broken command in the instruction file. High: any other Weak. Medium: Mixed across several files. Low: Mixed in one place, or one file that contradicts an otherwise Good score. Sort by severity, then by effort, smallest first.
+Each distinct problem is one row: Sev, What's wrong, How to fix it. No practice names. No Good or N/A rows. Never list the same problem twice. If one row's fix also fixes another problem, fold that problem into the fixing row.
 
-Follow `references/report-template.md`. One verdict line, then a table: Sev, Practice, Finding, Fix, Effort, Metric now. Detail blocks for Critical and High only: Evidence, Change, Measure. Under the table, one line per N/A with the reason. In fix mode, add the before/after table and the HEAD line.
+Below the table, a short detail section only for Critical and High. Head each with a short problem title, then Evidence (`file:line` where possible) and Change. Medium and Low get no detail section.
+
+## Fix mode
+
+The user must name rows, such as "fix 1 and 3" (count from the top of the table). Do not push, open a pull request, or merge unless asked.
+
+1. Review. Write the report first.
+2. Pick. Change only the named rows.
+3. On a clean HEAD, record the commit.
+4. Branch. New branch or worktree. Leave the default branch untouched.
+5. Change. One commit per row: the smallest change that fixes that problem.
+6. Run the done command. If it fails, revert that row and say so.
+7. Add the outcome to the report: what changed, whether the done command passed, and HEAD before and after.

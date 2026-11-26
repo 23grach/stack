@@ -10,7 +10,7 @@ A skill is a folder with one `SKILL.md`. The file is plain markdown, with a shor
 |---|---|
 | [codebase-review](skills/codebase-review/SKILL.md) | Score a repository for how easy it is for a coding agent to work in, and propose changes. |
 
-`codebase-review` scores the target against 13 practices. They cover names, layout, what search is allowed to see, file size, shared modules, git state, one schema, the instruction file, a done command, a fresh offline setup, checks for hard rules, and secrets. The default run is a read-only review. The report is sorted by severity (Critical, High, Medium, Low). Each row has a finding, a fix, an effort, and the metric as it stands now. Critical and High rows also get a short evidence block. Fix mode is opt-in: you name the rows, the skill changes only those, one commit per row, and it reports before/after numbers for the row and a small default set. It does not push or open a pull request unless you ask.
+`codebase-review` scores the target against 13 practices. They cover names, layout, what search is allowed to see, file size, shared modules, git state, one schema, the instruction file, a done command, a fresh offline setup, checks for hard rules, and secrets. The default run is a read-only review. The report lists only problems, sorted by severity (Critical, High, Medium, Low). Each row says what is wrong and how to fix it. Critical and High rows also get a short evidence block. Fix mode is opt-in: you name the rows, the skill changes only those, one commit per row, and it runs the done command to check the fix. It does not push or open a pull request unless you ask.
 
 ## Install
 
@@ -42,11 +42,10 @@ Pass a path, and a focus directory if you only want part of the tree. To apply f
 
 ```
 skills/codebase-review/SKILL.md
-skills/codebase-review/references/measure.md
 skills/codebase-review/references/report-template.md
 ```
 
-`SKILL.md` is the procedure. `references/measure.md` is the metric list: review fills Metric now from its read-only measures, and the done command runs only in fix mode. `references/report-template.md` is the report shape, including a labeled example.
+`SKILL.md` is the procedure. `references/report-template.md` is the report shape, including a labeled example.
 
 ## License
 
